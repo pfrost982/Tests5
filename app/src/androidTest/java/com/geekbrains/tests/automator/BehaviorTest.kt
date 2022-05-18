@@ -3,9 +3,6 @@ package com.geekbrains.tests.automator
 import android.content.Context
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -13,7 +10,6 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
-import com.geekbrains.tests.R
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -66,9 +62,14 @@ class BehaviorTest {
         val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
         //Устанавливаем значение
         editText.text = "UiAutomator"
-        //Отправляем запрос через Espresso
-        Espresso.onView(ViewMatchers.withId(R.id.searchEditText))
-            .perform(ViewActions.pressImeActionButton())
+
+        val searchButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "searchButton"
+            )
+        )
+        searchButton.click()
 
         //Ожидаем конкретного события: появления текстового поля totalCountTextView.
         //Это будет означать, что сервер вернул ответ с какими-то данными, то есть запрос отработал.
@@ -108,6 +109,107 @@ class BehaviorTest {
         //Чтобы проверить отображение определенного количества репозиториев,
         //вам в одном и том же методе нужно отправить запрос на сервер и открыть DetailsScreen.
         Assert.assertEquals(changedText.text, "Number of results: 0")
+    }
+
+    @Test
+    fun test_SearchResultsEqualDetailsScreen() {
+        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
+        editText.text = "UiAutomator"
+        val searchButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "searchButton"
+            )
+        )
+        searchButton.click()
+
+        val searchCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        val toDetailsButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "toDetailsActivityButton"
+            )
+        )
+        toDetailsButton.click()
+
+        val detailsCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        Assert.assertEquals(searchCount, detailsCount)
+    }
+
+    @Test
+    fun test_IncrementButton() {
+        val toDetailsButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "toDetailsActivityButton"
+            )
+        )
+        toDetailsButton.click()
+
+        val beforeCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        val incrementButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "incrementButton"
+            )
+        )
+        incrementButton.click()
+
+        val afterCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        Assert.assertEquals(beforeCount + 1, afterCount)
+    }
+
+    @Test
+    fun test_DecrementButton() {
+        val toDetailsButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "toDetailsActivityButton"
+            )
+        )
+        toDetailsButton.click()
+
+        val beforeCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        val decrementButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "decrementButton"
+            )
+        )
+        decrementButton.click()
+
+        val afterCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        Assert.assertEquals(beforeCount - 1, afterCount)
     }
 
     companion object {
