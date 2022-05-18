@@ -111,6 +111,41 @@ class BehaviorTest {
         Assert.assertEquals(changedText.text, "Number of results: 0")
     }
 
+    @Test
+    fun test_SearchResultsEqualDetailsScreen() {
+        val editText = uiDevice.findObject(By.res(packageName, "searchEditText"))
+        editText.text = "UiAutomator"
+        val searchButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "searchButton"
+            )
+        )
+        searchButton.click()
+
+        val searchCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        val toDetailsButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "toDetailsActivityButton"
+            )
+        )
+        toDetailsButton.click()
+
+        val detailsCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        Assert.assertEquals(searchCount, detailsCount)
+    }
+
     companion object {
         private const val TIMEOUT = 5000L
     }
