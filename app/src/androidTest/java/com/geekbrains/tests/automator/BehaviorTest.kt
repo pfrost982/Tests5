@@ -146,6 +146,72 @@ class BehaviorTest {
         Assert.assertEquals(searchCount, detailsCount)
     }
 
+    @Test
+    fun test_IncrementButton() {
+        val toDetailsButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "toDetailsActivityButton"
+            )
+        )
+        toDetailsButton.click()
+
+        val beforeCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        val incrementButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "incrementButton"
+            )
+        )
+        incrementButton.click()
+
+        val afterCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        Assert.assertEquals(beforeCount + 1, afterCount)
+    }
+
+    @Test
+    fun test_DecrementButton() {
+        val toDetailsButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "toDetailsActivityButton"
+            )
+        )
+        toDetailsButton.click()
+
+        val beforeCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        val decrementButton: UiObject2 = uiDevice.findObject(
+            By.res(
+                packageName,
+                "decrementButton"
+            )
+        )
+        decrementButton.click()
+
+        val afterCount =
+            uiDevice.wait(
+                Until.findObject(By.res(packageName, "totalCountTextView")),
+                TIMEOUT
+            ).text.substringAfterLast(" ").toInt()
+
+        Assert.assertEquals(beforeCount - 1, afterCount)
+    }
+
     companion object {
         private const val TIMEOUT = 5000L
     }
